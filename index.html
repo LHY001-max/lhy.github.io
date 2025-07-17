@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lhy的网址导航</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            background-image: url('https://pic2.zhimg.com/v2-febc9228d18886a29c68a66536279dfb_r.jpg?source=1940ef5c');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            
+            background-color: rgba(250, 250, 250, 0.05);
+            background-blend-mode: luminosity;
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            gap: 30px;
+        }
+
+        .title-container {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-title {
+            font-family: "SimHei", "黑体", sans-serif;
+            font-weight: bold;
+            font-size: 2.5rem;
+            color: #333;
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1),
+                         5px 5px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transform: perspective(500px) translateZ(5px);
+            transition: transform 0.3s ease;
+        }
+        
+        .title-container:hover .page-title {
+            transform: perspective(500px) translateZ(10px);
+        }
+
+        .toggle-icon {
+            font-size: 1.5rem;
+            color: #333;
+            transition: transform 0.3s ease;
+        }
+
+        .toggle-icon.rotate {
+            transform: rotate(180deg);
+        }
+
+        .center-box {
+            width: 80%;
+            max-width: 800px;
+            height: 60%;
+            background-color: rgba(255, 192, 203, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            overflow-y: auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            align-content: flex-start;
+            transition: all 0.5s ease;
+        }
+
+        .center-box.collapsed {
+            height: 0;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: none;
+        }
+
+        .small-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            font-family: "SimHei", "黑体", sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            gap: 10px;
+        }
+        
+        .small-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            background-color: rgba(255, 255, 255, 1);
+        }
+
+        .box-icon {
+            font-size: 1.8rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .small-box:hover .box-icon {
+            transform: scale(1.1);
+        }
+        
+        /* 各网站图标颜色 */
+        .baidu-icon { color: #2B79D9; }
+        .bilibili-icon { color: #FB7299; }
+        .douyin-icon { color: #000000; }
+        .game-icon { color: #7289DA; }
+        .ai-icon { color: #4285F4; }
+        .music-icon { color: #C62F2F; }
+        .plugin-icon { color: #34A853; }
+        .novel-icon { color: #FF9500; }
+        .study-icon { color: #5856D6; }
+
+        /* B站图标样式 */
+        .bilibili-icon-container {
+            position: relative;
+            width: 36px;
+            height: 36px;
+        }
+        
+        .bilibili-icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .bilibili-icon.play {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .bilibili-icon.logo {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .small-box:hover .bilibili-icon.play {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        .small-box:hover .bilibili-icon.logo {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .center-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .center-box::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+        
+        .center-box::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 105, 180, 0.6);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+        
+        .center-box::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(255, 105, 180, 0.8);
+        }
+
+        .info-container {
+            position: fixed;
+            top: 15px;
+            right: calc(10% + 15px);
+            max-width: 220px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: right;
+        }
+
+        .time {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 3px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .date {
+            font-size: 0.95rem;
+            color: #f0f0f0;
+        }
+
+        @media (max-width: 768px) {
+            .info-container {
+                padding: 8px 12px;
+                max-width: 180px;
+                right: calc(5% + 10px);
+            }
+            
+            .time {
+                font-size: 1.4rem;
+            }
+            
+            .date {
+                font-size: 0.85rem;
+            }
+            
+            .center-box {
+                width: 90%;
+                height: 60%;
+                border-radius: 15px;
+                padding: 15px;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .small-box {
+                height: 100px;
+                font-size: 1rem;
+                padding: 15px;
+            }
+            
+            .box-icon, .bilibili-icon-container {
+                font-size: 1.5rem;
+                width: 30px;
+                height: 30px;
+            }
+            
+            .page-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .center-box {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="title-container" id="titleContainer">
+        <h1 class="page-title">lhy的网址导航</h1>
+        <i class="fas fa-chevron-down toggle-icon" id="toggleIcon"></i>
+    </div>
+    
+    <div class="center-box" id="centerBox">
+        <!-- 百度链接（移动端） -->
+        <a href="https://m.baidu.com/?from=1012852z" target="_self" class="small-box">
+            <i class="fas fa-search box-icon baidu-icon"></i>
+            <span>百度</span>
+        </a>
+        <!-- B站链接（已更新为移动端链接） -->
+        <a href="https://m.bilibili.com/" target="_self" class="small-box">
+            <div class="bilibili-icon-container">
+                <i class="fas fa-play-circle bilibili-icon play"></i>
+                <i class="fas fa-tv bilibili-icon logo"></i>
+            </div>
+            <span>bilibili</span>
+        </a>
+        <!-- 抖音链接 -->
+        <a href="https://www.douyin.com" target="_self" class="small-box">
+            <i class="fas fa-music box-icon douyin-icon"></i>
+            <span>抖音</span>
+        </a>
+        <!-- 游戏链接 -->
+        <a href="https://www.gamer520.com" target="_self" class="small-box">
+            <i class="fas fa-gamepad box-icon game-icon"></i>
+            <span>游戏</span>
+        </a>
+        <!-- AI链接（豆包） -->
+        <a href="https://www.doubao.com" target="_self" class="small-box">
+            <i class="fas fa-robot box-icon ai-icon"></i>
+            <span>AI</span>
+        </a>
+        <!-- 音乐链接（网易云音乐） -->
+        <a href="https://music.163.com/" target="_self" class="small-box">
+            <i class="fas fa-headphones box-icon music-icon"></i>
+            <span>音乐</span>
+        </a>
+        <!-- 插件链接 -->
+        <a href="https://chrome.zzzmh.cn/" target="_self" class="small-box">
+            <i class="fas fa-puzzle-piece box-icon plugin-icon"></i>
+            <span>插件</span>
+        </a>
+        <!-- 小说链接 -->
+        <a href="https://fanqienovel.com/" target="_self" class="small-box">
+            <i class="fas fa-book-open box-icon novel-icon"></i>
+            <span>小说</span>
+        </a>
+        <!-- 学习链接 -->
+        <a href="https://www.runoob.com/" target="_self" class="small-box">
+            <i class="fas fa-graduation-cap box-icon study-icon"></i>
+            <span>学习</span>
+        </a>
+    </div>
+    
+    <div class="info-container">
+        <div class="time" id="time">00:00:00</div>
+        <div class="date" id="date">2023年1月1日 星期一</div>
+    </div>
+
+    <script>
+        // 折叠功能实现
+        const titleContainer = document.getElementById('titleContainer');
+        const centerBox = document.getElementById('centerBox');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        titleContainer.addEventListener('click', () => {
+            centerBox.classList.toggle('collapsed');
+            toggleIcon.classList.toggle('rotate');
+        });
+        
+        // 更新时间和日期
+        function updateDateTime() {
+            const now = new Date();
+            
+            // 格式化时间
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('time').textContent = `${hours}:${minutes}:${seconds}`;
+            
+            // 格式化日期
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const weekday = weekdays[now.getDay()];
+            document.getElementById('date').textContent = `${year}年${month}月${day}日 ${weekday}`;
+        }
+        
+        // 初始化并设置定时器
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+    </script>
+</body>
+</html>
